@@ -1,0 +1,1 @@
+* Write validator for feature.shortcuts.js
