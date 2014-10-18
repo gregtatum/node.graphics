@@ -20,6 +20,7 @@ module.exports = Cursor;
 Cursor.prototype = {
 	
 	addHandlers : function() {
+		console.log('create node', shortcuts.createNode);
 		this.nodeEditor.keyboard.on( shortcuts.up, this.up, this );
 		this.nodeEditor.keyboard.on( shortcuts.down, this.down, this );
 		this.nodeEditor.keyboard.on( shortcuts.left, this.left, this );
@@ -29,6 +30,7 @@ Cursor.prototype = {
 		this.nodeEditor.keyboard.on( shortcuts.siblingLeft, this.siblingLeft, this );
 		this.nodeEditor.keyboard.on( shortcuts.siblingRight, this.siblingRight, this );
 		this.nodeEditor.on('nodesAdded', this.handleNodesAdded.bind(this) );
+		this.nodeEditor.keyboard.on( shortcuts.createNode, this.createNode, this );
 	},
 	
 	removeHandlers : function() {
@@ -140,6 +142,15 @@ Cursor.prototype = {
 		this.updatePosition();
 		
 		this.nodeEditor.force.on('tick.node-cursor', this.updatePosition.bind(this));
+		
+	},
+	
+	createNode : function() {
+		
+		console.warn('temporary create node implementation');
+		var x = 20 - Math.random() * 40;
+		var y = 20 - Math.random() * 40;
+		var node = this.nodeEditor.tree.addNodeByType( "group", this.node.x + x, this.node.y + y, this.node );
 		
 	},
 	

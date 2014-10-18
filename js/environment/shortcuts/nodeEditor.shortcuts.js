@@ -18,6 +18,7 @@ module.exports = {
 		siblingUp		: [{ modifiers: [mouse.shift], key: keys.up }],
 		siblingDown		: [{ modifiers: [mouse.shift], key: keys.down }],
 		siblingLeft		: [{ modifiers: [mouse.shift], key: keys.left }],
-		siblingRight	: [{ modifiers: [mouse.shift], key: keys.right }]
+		siblingRight	: [{ modifiers: [mouse.shift], key: keys.right }],
+		createNode		: [{ key: keys.enter }]
 	}
 };
