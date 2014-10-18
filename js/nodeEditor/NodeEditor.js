@@ -1,4 +1,5 @@
 var	d3				= require('d3'),
+	EventDispatcher = require('../utils/EventDispatcher'),
 	wrapScope		= require('../utils/wrapScope'),
 	nodeTypeClasses	= require('./nodeTypes'),
 	keys			= require('../environment/shortcuts/nodeEditor.shortcuts'),
@@ -137,6 +138,8 @@ NodeEditor.prototype = {
 		
 		//this.$nodes.call(drag);
 		this.force.start();
+		
+		this.dispatch({ type: "nodesAdded" });
 	},
 	
 	updateNodes : function() {
@@ -187,3 +190,5 @@ NodeEditor.prototype = {
 	}
 	
 };
+
+EventDispatcher.prototype.apply( NodeEditor.prototype );

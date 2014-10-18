@@ -1,7 +1,14 @@
 var wrapScope		= require('../../utils/wrapScope'),
 	mouse			= require('../../constants/mouse'),
 	EventDispatcher = require('../../utils/EventDispatcher');
-
+	
+var modifierKeys = [
+	"command",
+	"control",
+	"option",
+    "shift"
+];
+	
 var Keyboard = function( $scope ) {
 	
 	this.$scope = $scope;
@@ -51,13 +58,17 @@ Keyboard.prototype = {
 			var keyChecker = function( jQueryEvent ) {
 				
 				var modifiersCorrect, keysCorrect;
+				
+				var modifiers = shortcut.modifiers || {};
 			
-				modifiersCorrect = _.reduce( shortcut.modifiers, function( memo, modifier ) {
-			
-					return memo && d3.event[modifier];
-			
+				modifiersCorrect = _.reduce( modifierKeys, function( memo, modifierKey ) {
+				
+					
+					return memo && d3.event[ mouse[modifierKey] ] === !!modifiers[modifierKey];
+				
 				}, true );
-			
+					
+				
 				keysCorrect = d3.event.keyCode === shortcut.key;
 				
 				if( modifiersCorrect && keysCorrect ) {

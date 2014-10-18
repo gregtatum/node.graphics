@@ -1,4 +1,5 @@
-var shortcuts = require('../../environment/shortcuts/nodeEditor.shortcuts').cursor;
+var	shortcuts = require('../../environment/shortcuts/nodeEditor.shortcuts').cursor,
+	wrapScope = require("../../utils/wrapScope");
 
 var Cursor = function( nodeEditor, $node ) {
 	
@@ -10,6 +11,8 @@ var Cursor = function( nodeEditor, $node ) {
 	}
 	this.addHandlers();
 	this.add();
+	
+	this.handleHover = wrapScope( this.hover, this );
 };
 
 module.exports = Cursor;
@@ -21,6 +24,11 @@ Cursor.prototype = {
 		this.nodeEditor.keyboard.on( shortcuts.down, this.down, this );
 		this.nodeEditor.keyboard.on( shortcuts.left, this.left, this );
 		this.nodeEditor.keyboard.on( shortcuts.right, this.right, this );
+		this.nodeEditor.keyboard.on( shortcuts.siblingUp, this.siblingUp, this );
+		this.nodeEditor.keyboard.on( shortcuts.siblingDown, this.siblingDown, this );
+		this.nodeEditor.keyboard.on( shortcuts.siblingLeft, this.siblingLeft, this );
+		this.nodeEditor.keyboard.on( shortcuts.siblingRight, this.siblingRight, this );
+		this.nodeEditor.on('nodesAdded', this.handleNodesAdded.bind(this) );
 	},
 	
 	removeHandlers : function() {
@@ -28,6 +36,10 @@ Cursor.prototype = {
 		this.nodeEditor.keyboard.off( shortcuts.down, this.down, this );
 		this.nodeEditor.keyboard.off( shortcuts.left, this.left, this );
 		this.nodeEditor.keyboard.off( shortcuts.right, this.right, this );
+		this.nodeEditor.keyboard.off( shortcuts.siblingUp, this.siblingUp, this );
+		this.nodeEditor.keyboard.off( shortcuts.siblingDown, this.siblingDown, this );
+		this.nodeEditor.keyboard.off( shortcuts.siblingLeft, this.siblingLeft, this );
+		this.nodeEditor.keyboard.off( shortcuts.siblingRight, this.siblingRight, this );
 	},
 	
 	navigateCheck : function( node ) {
@@ -41,24 +53,62 @@ Cursor.prototype = {
 		}	
 	},
 	
+	handleNodesAdded : function( event ) {
+		this.nodeEditor.$nodes.on('mouseover.Cursor', this.handleHover );
+
+	},
+	
+	hover : function( el ) {
+
+		var $node = d3.select(el);
+		var node = $node.data()[0];
+		
+		if( node ) {
+			this.setNode( $node, node );
+		}
+		
+	},
+	
 	up : function() {
 		console.log('up');
-		this.navigateCheck( this.nodeEditor.tree.navigateUp( this.node ) );
+		this.navigateCheck( this.nodeEditor.tree.nearestUp( this.node ) );
 	},
 	
 	down : function() {
 		console.log('down');
-		this.navigateCheck( this.nodeEditor.tree.navigateDown( this.node ) );
+		this.navigateCheck( this.nodeEditor.tree.nearestDown( this.node ) );
 	},
 	
 	left : function() {
 		console.log('left');
 		
-		this.navigateCheck( this.nodeEditor.tree.navigateLeft( this.node ) );
+		this.navigateCheck( this.nodeEditor.tree.nearestLeft( this.node ) );
 	},
 	
 	right : function() {
 		console.log('right');
+		
+		this.navigateCheck( this.nodeEditor.tree.nearestRight( this.node ) );
+	},
+	
+	siblingUp : function() {
+		console.log('siblingUp');
+		this.navigateCheck( this.nodeEditor.tree.navigateUp( this.node ) );
+	},
+	
+	siblingDown : function() {
+		console.log('siblingDown');
+		this.navigateCheck( this.nodeEditor.tree.navigateDown( this.node ) );
+	},
+	
+	siblingLeft : function() {
+		console.log('siblingLeft');
+		
+		this.navigateCheck( this.nodeEditor.tree.navigateLeft( this.node ) );
+	},
+	
+	siblingRight : function() {
+		console.log('siblingRight');
 		
 		this.navigateCheck( this.nodeEditor.tree.navigateRight( this.node ) );
 	},

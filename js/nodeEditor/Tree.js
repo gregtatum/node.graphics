@@ -199,6 +199,88 @@ Tree.prototype = {
 		return this._navigateSiblings( node, 1 );
 	},
 	
+	_nearestInRange : function() {
+		
+		function rangeIsPoorlyFormed( lowerRadians, upperRadians ) {
+			return (
+				lowerRadians >= upperRadians ||
+				upperRadians - lowerRadians > 2 * Math.PI ||
+				lowerRadians > 2 * Math.PI
+			);
+		}
+		
+		function isInRange( angle, lowerRadians, upperRadians) {
+			
+			angle %= 2 * Math.PI;
+			if( angle < 0 ) angle += 2 * Math.PI;
+			
+			if( angle < lowerRadians ) {
+				angle += 2 * Math.PI;
+			}
+			
+			return angle >= lowerRadians && angle < upperRadians;
+			
+			
+		}
+		
+		return function( nodeA, lowerRadians, upperRadians ) {
+		
+			if( rangeIsPoorlyFormed( lowerRadians, upperRadians ) ) {
+				throw "The defined range is poorly formed.";
+			}
+			
+			var result = _.reduce(this.nodes, function( memo, nodeB ) {
+			
+				if( nodeA === nodeB ) return memo;
+				
+				var distanceSq;
+				var deltaX = nodeB.x - nodeA.x;
+				var deltaY = nodeB.y - nodeA.y;
+				var angle = Math.atan2( deltaY, deltaX )
+			
+				if( isInRange( angle, lowerRadians, upperRadians ) ) {
+			
+					distanceSq = deltaX * deltaX + deltaY * deltaY;
+				
+					if( !memo || distanceSq < memo.distanceSq ) {
+						return {
+							distanceSq : distanceSq,
+							node: nodeB
+						}
+					} else {
+						return memo;
+					}
+				
+				} else {
+					return memo;
+				}
+			
+			}, null);
+			
+			if(result) {
+				return result.node;
+			} else {
+				return null;
+			}
+		};
+	}(),
+	
+	nearestDown : function( node ) {
+		return this._nearestInRange( node, (Math.PI*0.20), (Math.PI*0.80) );
+	},
+	
+	nearestLeft : function( node ) {
+		return this._nearestInRange( node, (Math.PI*0.80), (Math.PI*1.20) );
+	},
+	
+	nearestUp : function( node ) {
+		return this._nearestInRange( node, (Math.PI*1.20), (Math.PI*1.80) );
+	},
+	
+	nearestRight : function( node ) {
+		return this._nearestInRange( node, (Math.PI*1.80), (Math.PI*2.20) );
+	},
+	
 	addLink : function( source, target ) {
 		
 		this.links.push({source: source, target: target});

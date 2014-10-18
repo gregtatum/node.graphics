@@ -11,9 +11,13 @@ module.exports = {
 		}
 	},
 	cursor : {
-		up		: [{ key: keys.up }],
-		down	: [{ key: keys.down }],
-		left	: [{ key: keys.left }],
-		right	: [{ key: keys.right }]
+		up				: [{ key: keys.up }],
+		down			: [{ key: keys.down }],
+		left			: [{ key: keys.left }],
+		right			: [{ key: keys.right }],
+		siblingUp		: [{ modifiers: [mouse.shift], key: keys.up }],
+		siblingDown		: [{ modifiers: [mouse.shift], key: keys.down }],
+		siblingLeft		: [{ modifiers: [mouse.shift], key: keys.left }],
+		siblingRight	: [{ modifiers: [mouse.shift], key: keys.right }]
 	}
 };
