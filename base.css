@@ -75,6 +75,12 @@ rect {
 .link {
 	stroke: #999;
 }
+.node-cursor {
+	stroke:rgba(255,255,255,0.8);
+	stroke-width:1.5;
+	fill: transparent;
+	pointer-events:none;
+}
 .node-lasso {
 	stroke: #fff;
 	stroke-width:3;

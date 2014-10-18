@@ -21,7 +21,7 @@ Tree.prototype = {
 	
 	id : 0,
 	
-	isChild : function( parent, child) {
+	isChild : function( parent, child ) {
 		
 		var links = _.filter( this.links, compareToProperty(parent, "source") );
 				
@@ -37,7 +37,7 @@ Tree.prototype = {
 		
 	},
 	
-	isImmediateChild : function(tree, parent, child) {
+	isImmediateChild : function( tree, parent, child ) {
 		
 		var links = _.filter( this.links, compareToProperty(parent, "source") );
 				
@@ -71,11 +71,10 @@ Tree.prototype = {
 	
 	navigateUp : function( node ) {
 		
-		//TEST ME
-		
 		var link = _.find( this.links, function( link ) {
-			return link.target === link;
+			return link.target === node;
 		});
+		
 		
 		if(link) {
 			return link.source;
@@ -91,21 +90,24 @@ Tree.prototype = {
 		
 		var parentLink, links, parentAngle, linkWithMostSimilarAngle;
 		
-		
-		parentLink = _.find( this.links, function( link ) {
-			return link.target === link;
-		});
-		
 		links = _.filter( this.links, function( link ) {
-			return link.source === link;
+			return link.source === node;
 		});
 		
 		
-		if(parentLink && links.length > 0) {
+		if(links.length >= 1) {
 			
-			parentAngle = this.linkAngle( parentAngle );
+			parentLink = _.find( this.links, function( link ) {
+				return link.target === node;
+			});
 			
-			var angles = _.map( this.links, this.linkAngle );
+			if(parentLink) {
+				parentAngle = this.linkAngle( parentLink );
+			} else {
+				parentAngle = Math.PI * 1.5;
+			}
+			
+			var angles = _.map( links, this.linkAngle );
 			
 			linkWithMostSimilarAngle = _.reduce( angles, function( memo, angle, i ) {
 				
@@ -139,12 +141,62 @@ Tree.prototype = {
 		
 	},
 	
-	navigateLeft : function() {
-		//TODO
+	_navigateSiblings : function( node, direction ) {
+		
+		var parentLink, parentAngle, siblingLinks, nextLink, siblingAngles;
+		
+		parentLink = _.find( this.links, function( link ) {
+			return link.target === node;
+		});
+		
+		if(!parentLink) return null;
+		
+		siblingLinks = _.filter( this.links, function( link ) {
+			return parentLink.source === link.source && link.target !== node;
+		});
+	
+		if( parentLink && siblingLinks.length >= 1 ) {
+			
+			parentAngle = this.linkAngle( parentLink );
+			
+			siblingAngles = _.map( siblingLinks, this.linkAngle );
+		
+			nextLink = _.reduce( siblingAngles, function( memo, angle, i ) {
+			
+				var angleDiff = ( ( parentAngle - angle ) * direction ) % ( 2 * Math.PI );
+				if( angleDiff < 0 ) angleDiff += 2 * Math.PI;
+			
+				if( memo.link ) {
+				
+					if( memo.angleDiff < angleDiff ) {
+						return memo;
+					} else {
+						return {
+							link: siblingLinks[i],
+							angleDiff: angleDiff
+						};
+					}
+				
+				} else {
+					return {
+						link: siblingLinks[i],
+						angleDiff: angleDiff
+					};
+				}
+			
+			}, {} );
+			
+			return nextLink.link.target;
+		}
+		
 	},
 	
-	navigateRight : function() {
-		//TODO
+	navigateLeft : function( node ) {
+		return this._navigateSiblings( node, -1 );
+	},
+	
+	navigateRight : function( node ) {
+		return this._navigateSiblings( node, 1 );
 	},
 	
 	addLink : function( source, target ) {
@@ -189,7 +241,7 @@ Tree.prototype = {
 			type: type,
 			depth: (parent ? parent.depth + 1 : 0),
 			id: ++Tree.prototype.id
-		}
+		};
 		
 		return this.addNode( node, parent );
 		

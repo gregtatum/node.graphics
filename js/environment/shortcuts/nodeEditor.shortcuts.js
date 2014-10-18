@@ -9,5 +9,11 @@ module.exports = {
 		group : {
 			drawLine : { modifiers: [mouse.command], click: mouse.left }
 		}
+	},
+	cursor : {
+		up		: [{ key: keys.up }],
+		down	: [{ key: keys.down }],
+		left	: [{ key: keys.left }],
+		right	: [{ key: keys.right }]
 	}
 };

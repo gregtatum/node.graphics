@@ -8,7 +8,7 @@ var RootNode = function() {
 	this.cssClass = "node-type-root";
 	this.$nodes = this.$scope.selectAll("."+this.cssClass);
 	
-}
+};
 
 RootNode.prototype = _.extend( {}, GroupNode.prototype, {
 	

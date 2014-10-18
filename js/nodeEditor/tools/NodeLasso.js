@@ -1,9 +1,9 @@
-var	HID = require('../../utils/HID'),
-	EventDispatcher = require('../../utils/EventDispatcher');
+var	EventDispatcher = require('../../utils/EventDispatcher');
 
-var NodeLasso = function( $scope, shortcut ) {
+var NodeLasso = function( nodeEditor, shortcut ) {
 	
-	this.$scope = $scope;
+	this.nodeEditor = nodeEditor;
+	this.$scope = nodeEditor.$scope;
 	
 	this.$nodes = null;
 	this.$sourceNode = null;
@@ -15,11 +15,11 @@ var NodeLasso = function( $scope, shortcut ) {
 	this.$hoverCircle = null;
 	this.$lassoTip = null;
 	
-	this.handlersMousedown		= HID.wrapMouse( shortcut, this.start, this );
-	this.handlersMouseup		= HID.wrapMouseUp( shortcut, this.stop, this );
-	this.handlersMousemove		= HID.wrapScope( this.move, this );
-	this.handlersMouseoverNode	= HID.wrapScope( this.mouseoverNode, this );
-	this.handlersMouseoutNode	= HID.wrapScope( this.mouseoutNode, this );
+	this.handlersMousedown		= this.nodeEditor.mouse.wrapMouse( shortcut, this.start, this );
+	this.handlersMouseup		= this.nodeEditor.mouse.wrapMouseUp( shortcut, this.stop, this );
+	this.handlersMousemove		= this.nodeEditor.mouse.wrapScope( this.move, this );
+	this.handlersMouseoverNode	= this.nodeEditor.mouse.wrapScope( this.mouseoverNode, this );
+	this.handlersMouseoutNode	= this.nodeEditor.mouse.wrapScope( this.mouseoutNode, this );
 
 };
 

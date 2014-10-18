@@ -1,5 +1,4 @@
-var HID = require('../../utils/HID'),
-	shortcuts = require('../../environment/shortcuts/nodeEditor.shortcuts.js'),
+var shortcuts = require('../../environment/shortcuts/nodeEditor.shortcuts.js'),
 	NodeLasso = require('../tools/NodeLasso');
 
 var GroupNode = function( nodeEditor, settings ) {
@@ -11,11 +10,11 @@ var GroupNode = function( nodeEditor, settings ) {
 	
 	this.cssClass = "node-type-group";
 	this.$nodes = this.$scope.selectAll("."+this.cssClass);
-	this.nodeLasso = new NodeLasso( this.$scope, this.shortcuts.drawLine );
+	this.nodeLasso = new NodeLasso( this.nodeEditor, this.shortcuts.drawLine );
 	
 	this.nodeLasso.on( 'lasso', this.onLasso.bind(this) );
 	this.nodeLasso.on( 'emptyRelease', this.onEmptyRelease.bind(this) );
-}
+};
 
 module.exports = GroupNode;
 

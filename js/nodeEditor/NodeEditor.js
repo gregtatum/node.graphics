@@ -2,7 +2,8 @@ var	d3				= require('d3'),
 	wrapScope		= require('../utils/wrapScope'),
 	nodeTypeClasses	= require('./nodeTypes'),
 	keys			= require('../environment/shortcuts/nodeEditor.shortcuts'),
-	HID				= require('../utils/HID'),
+	Keyboard		= require('../utils/HID/Keyboard'),
+	Mouse			= require('../utils/HID/Mouse'),
 	Cursor			= require('./tools/Cursor'),
 	Tree			= require('./Tree');
 
@@ -23,7 +24,9 @@ var NodeEditor = function() {
 		type: "root",
 		id: 0
 	};
-			
+
+	this.keyboard = new Keyboard( d3.select('body') );
+	this.mouse = new Mouse();
 	this.force = this.createForce( root );
 	this.$scope = this.createSvg();
 	this.backdrop = this.createBackdrop();
@@ -38,6 +41,9 @@ var NodeEditor = function() {
 
 	this.setHandlers();
 	this.restart();
+	
+	this.cursor = new Cursor( this, this.get$ElFromNode( root ) );
+	
 };
 
 module.exports = NodeEditor;
@@ -172,6 +178,12 @@ NodeEditor.prototype = {
 			
 		}, this);
 		
+	},
+	
+	get$ElFromNode : function( node ) {
+		return this.$nodes.filter(function(d) {
+			return d.id === node.id;
+		});
 	}
 	
 };

@@ -16,12 +16,12 @@
  *		}
  */
 
-wrapScope = function(callback, scope) {
+var wrapScope = function(callback, scope) {
 	
 	return function() {
 		callback.call(scope, this );
 	};
 	
-}
+};
 
 module.exports = wrapScope;
