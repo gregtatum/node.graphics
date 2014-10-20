@@ -41,13 +41,22 @@ NodeEditor.prototype = {
 	createForce : function() {
 		
 		var ratio = this.scene.ratio;
+		var screenWidth = Math.sqrt(
+			Math.pow(this.scene.width, 2),
+			Math.pow(this.scene.height, 2)
+		);
 		
 		return d3.layout.force()
-			.size([this.scene.width, this.scene.height])
+			.size([this.scene.width * 0.6, this.scene.height * 0.6])
 			.nodes(this.tree.nodes) // initialize with a single node
 			.links(this.tree.links)
 			.linkDistance(function(d) {
-				return Math.max(100 - d.source.depth * 20, 10) * ratio;
+				
+				return Math.max(
+					(5 - d.source.depth) * (screenWidth / 80),
+					2 * ratio
+				);
+				
 			})
 			.charge(function(d) {
 				return Math.min(-1000 / (d.depth + 1) , -60) * ratio;
