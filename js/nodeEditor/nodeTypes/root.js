@@ -6,7 +6,7 @@ var RootNode = function() {
 	
 	//Change cssClass
 	this.cssClass = "node-type-root";
-	this.$nodes = this.$scope.selectAll("."+this.cssClass);
+	this.type = "root";
 	
 };
 

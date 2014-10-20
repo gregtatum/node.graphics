@@ -226,9 +226,9 @@ NodeLasso.prototype = {
 		}
 	},
 	
-	setHandlers : function( $newNodes ) {
+	setHandlers : function( nodeType ) {
 		
-		$newNodes.on('mousedown.node-lasso', this.handlersMousedown );
+		nodeType.on('mousedown.node-lasso', this.handlersMousedown );
 		
 	}
 };

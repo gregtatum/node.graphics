@@ -9,17 +9,14 @@ var modifierKeys = [
     "shift"
 ];
 	
-var Keyboard = function( $scope ) {
+var Keyboard = function() {
 	
-	this.$scope = $scope;
+	this.$scope = $(window);
 	this.dispatcher = new EventDispatcher();
 	this.registeredKeypresses = [];
 	this.eventScope = ".HID.Keyboard" + Keyboard.prototype._id;
 	Keyboard.prototype._id++;
 	
-	this._handleKeyDownWrapped	= wrapScope( this._handleKeyDown, this );
-	this._handleKeyUpWrapped	= wrapScope( this._handleKeyUp, this );
-
 	if( this.$scope ) {
 		this.start( this.$scope );
 	}
@@ -34,16 +31,19 @@ Keyboard.prototype = {
 	
 	start : function( $scope ) {
 		this.$scope = $scope;
-		this.$scope.on('keydown'+this.eventScope, this._handleKeyDownWrapped );
+		this.$scope.on('keydown'+this.eventScope, this._handleKeyDown.bind(this) );
 	},
 	
 	end : function() {
-		this.$scope.on('keydown'+this.eventScope, null );
+		this.$scope.off('keydown'+this.eventScope);
 		this.clearKeypresses();
 	},
 
-	_handleKeyDown : function() {
-		this.dispatcher.dispatch({type:'keypress'});
+	_handleKeyDown : function( e ) {
+		this.dispatcher.dispatch({
+			type:'keypress',
+			event: e
+		});
 	},
 
 	on : function( shortcuts, callback, context ) {
@@ -55,7 +55,7 @@ Keyboard.prototype = {
 		
 		_.each( shortcuts, function( shortcut ) {
 			
-			var keyChecker = function( jQueryEvent ) {
+			var keyChecker = function( e ) {
 				
 				var modifiersCorrect, keysCorrect;
 				
@@ -63,13 +63,12 @@ Keyboard.prototype = {
 			
 				modifiersCorrect = _.reduce( modifierKeys, function( memo, modifierKey ) {
 				
-					
-					return memo && d3.event[ mouse[modifierKey] ] === !!modifiers[modifierKey];
+					return memo && e.event[ mouse[modifierKey] ] === !!modifiers[modifierKey];
 				
 				}, true );
 					
 				
-				keysCorrect = d3.event.keyCode === shortcut.key;
+				keysCorrect = e.event.keyCode === shortcut.key;
 				
 				if( modifiersCorrect && keysCorrect ) {
 					callback.apply(context);

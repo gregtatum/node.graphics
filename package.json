@@ -12,8 +12,10 @@
     "gulp-sourcemaps": "^1.1.1",
     "gulp-uglify": "^0.3.1",
     "gulp-util": "^3.0.0",
+    "jquery": "^2.1.1",
     "jshint-stylish": "^0.4.0",
     "minifyify": "^4.0.4",
+    "pixi.js": "^1.6.1",
     "reactify": "^0.14.0",
     "vinyl-source-stream": "^0.1.1",
     "watchify": "^1.0.2"

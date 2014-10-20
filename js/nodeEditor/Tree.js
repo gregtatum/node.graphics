@@ -1,12 +1,22 @@
 var EventDispatcher = require('../utils/EventDispatcher');
-var Tree = function( root, nodes, links ) {
+var Tree = function( nodeEditor ) {
 	
-	this.root = root;
-	this.nodes = nodes;
-	this.links = links;
+	this.nodeEditor = nodeEditor;
+	
+	this.root = {
+		x: this.nodeEditor.scene.width * 0.6,
+		y: this.nodeEditor.scene.height * 0.6,
+		depth: 0,
+		type: "root",
+		id: 0
+	};
+	this.nodes = [this.root];
+	this.links = [];
 	
 	this.dispatch({
-		type: "changed"
+		type: "changed",
+		nodes: this.nodes,
+		links: this.links
 	});
 	
 };
@@ -59,6 +69,14 @@ Tree.prototype = {
 		
 		return _.filter( this.nodes, function( node ) {
 			return node.id === id;
+		});
+		
+	},
+	
+	getNodesByType : function( type ) {
+		
+		return _.filter( this.nodes, function( node ) {
+			return node.type === type;
 		});
 		
 	},
@@ -236,7 +254,7 @@ Tree.prototype = {
 				var distanceSq;
 				var deltaX = nodeB.x - nodeA.x;
 				var deltaY = nodeB.y - nodeA.y;
-				var angle = Math.atan2( deltaY, deltaX )
+				var angle = Math.atan2( deltaY, deltaX );
 			
 				if( isInRange( angle, lowerRadians, upperRadians ) ) {
 			
@@ -246,7 +264,7 @@ Tree.prototype = {
 						return {
 							distanceSq : distanceSq,
 							node: nodeB
-						}
+						};
 					} else {
 						return memo;
 					}
@@ -286,7 +304,9 @@ Tree.prototype = {
 		this.links.push({source: source, target: target});
 	
 		this.dispatch({
-			type: "changed"
+			type: "changed",
+			nodes: this.nodes,
+			links: this.links
 		});
 		
 	},
@@ -299,7 +319,9 @@ Tree.prototype = {
 		}
 		
 		this.dispatch({
-			type: "changed"
+			type: "changed",
+			nodes: this.nodes,
+			links: this.links
 		});
 		
 		return node;

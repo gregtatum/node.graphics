@@ -1,13 +1,15 @@
-var	shortcuts = require('../../environment/shortcuts/nodeEditor.shortcuts').cursor,
-	wrapScope = require("../../utils/wrapScope");
+var	shortcuts	= require('../../environment/shortcuts/nodeEditor.shortcuts').cursor,
+	wrapScope	= require("../../utils/wrapScope"),
+	PIXI		= require("pixi.js");
 
-var Cursor = function( nodeEditor, $node ) {
+var Cursor = function( nodeEditor, node ) {
 	
 	this.nodeEditor = nodeEditor;
-	this.$node = null;
+	this.node = null;
+	this.sprite = new PIXI.Graphics();
 	
-	if( $node ) {
-		this.setNode( $node );
+	if( node ) {
+		this.setNode( node );
 	}
 	this.addHandlers();
 	this.add();
@@ -20,7 +22,6 @@ module.exports = Cursor;
 Cursor.prototype = {
 	
 	addHandlers : function() {
-		console.log('create node', shortcuts.createNode);
 		this.nodeEditor.keyboard.on( shortcuts.up, this.up, this );
 		this.nodeEditor.keyboard.on( shortcuts.down, this.down, this );
 		this.nodeEditor.keyboard.on( shortcuts.left, this.left, this );
@@ -45,29 +46,24 @@ Cursor.prototype = {
 	},
 	
 	navigateCheck : function( node ) {
-		var $el;
 		
 		if( node ) {
-			
-			$el = this.nodeEditor.get$ElFromNode( node );
-			
-			this.setNode( $el, node );
+			this.setNode( node );
 		}	
 	},
 	
 	handleNodesAdded : function( event ) {
-		this.nodeEditor.$nodes.on('mouseover.Cursor', this.handleHover );
-
+		//this.nodeEditor.$nodes.on('mouseover.Cursor', this.handleHover );
 	},
 	
 	hover : function( el ) {
 
-		var $node = d3.select(el);
-		var node = $node.data()[0];
-		
-		if( node ) {
-			this.setNode( $node, node );
-		}
+		// var $node = d3.select(el);
+		// var node = $node.data()[0];
+		//
+		// if( node ) {
+		// 	this.setNode( $node, node );
+		// }
 		
 	},
 	
@@ -115,28 +111,19 @@ Cursor.prototype = {
 		this.navigateCheck( this.nodeEditor.tree.navigateRight( this.node ) );
 	},
 	
-	setNode : function( $node, node ) {
+	setNode : function( node ) {
 		
-		this.$node = $node;
+		this.node = node;
 		
-		if( this.$node && node ) {
-			this.node = node;
-		} else {
-			this.node = $node.data()[0];
-		}
-		
-		if( this.$circle ) {
-			this.updateSize();
-			this.updatePosition();
-		}
+		this.updateSize();
+		this.updatePosition();
 		
 	},
 	
 	add : function() {
-		
-		this.$circle = this.nodeEditor.$scope
-			.append("circle")
-			.attr("class", "node-cursor");
+
+
+		this.nodeEditor.scene.stage.addChild( this.sprite );
 			
 		this.updateSize();
 		this.updatePosition();
@@ -155,21 +142,25 @@ Cursor.prototype = {
 	},
 	
 	updateSize : function() {
-		this.$circle.attr("r", parseInt(this.$node.attr('r'), 10) + 4 );
+		
+		this.sprite.clear();
+		this.sprite.lineStyle( 2 * this.nodeEditor.scene.ratio, 0xffffff, 1 );
+		this.sprite.drawCircle( 0, 0, 20 * this.nodeEditor.scene.ratio  );
+		
+		
+		console.warn('Cursor.updateSize() update size based on node');
 	},
 	
 	updatePosition : function() {
 
-		this.$circle
-			.attr('cx', this.$node.attr('cx'))
-			.attr('cy', this.$node.attr('cy'));
+		this.sprite.position.x = this.node.x;
+		this.sprite.position.y = this.node.y;
+		
 		
 	},
 	
 	remove : function() {
-		if( this.$circle) {
-			this.$circle.remove();
-		}
+		this.nodeEditor.scene.stage.removeChild( this.sprite );
 	}
 	
 };
