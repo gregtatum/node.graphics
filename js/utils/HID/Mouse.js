@@ -2,7 +2,21 @@ var wrapScope		= require('../../utils/wrapScope'),
 	mouse			= require('../../constants/mouse'),
 	EventDispatcher = require('../../utils/EventDispatcher');
 
-var Mouse = function() {};
+var Mouse = function( nodeEditor ) {
+	
+	this.nodeEditor = nodeEditor;
+	
+	this.position = {
+		x: 0,
+		y: 0
+	};
+	
+	_.bindAll( this, "_handleMove", "start", "stop");
+	
+	this.nodeEditor.on( 'show', this.start );
+	this.nodeEditor.on( 'hide', this.stop );
+	this.nodeEditor.on( 'destroy', this.stop );
+};
 
 module.exports = Mouse;
 
@@ -14,20 +28,20 @@ Mouse.prototype = {
 		
 		var scope = this;
 		
-		return function() {
-			
+		return function( event ) {
+			console.log("Event:", event.originalEvent);
 			var modifiersCorrect, clickCorrect;
-				
+			
 			modifiersCorrect = _.reduce( shortcuts.modifiers, function( memo, modifier ) {
 			
-				return memo && d3.event[modifier];
+				return memo && event.originalEvent[modifier];
 			
 			}, true );
-		
-			clickCorrect = shortcuts.click === scope.normalizeWhich( d3.event );
-		
+			
+			clickCorrect = shortcuts.click === scope.normalizeWhich( event.originalEvent );
+			
 			if( modifiersCorrect && clickCorrect ) {
-				callback.call(context, this );
+				callback.call(context, event );
 			}
 		};
 		
@@ -55,7 +69,25 @@ Mouse.prototype = {
 			case 3: return mouse.right;
 			default: return null;
 		}
+	},
+	
+	start : function() {
+		$(window).on('mousemove', this._handleMove);
+	},
+	
+	stop : function() {
+		$(window).off('mousemove', this._handleMove);
+	},
+	
+	_handleMove : function( e ) {
+		
+		var offset = this.nodeEditor.$scope.offset();
+		
+		this.position.x = (e.pageX - offset.left) * this.nodeEditor.scene.ratio;
+		this.position.y = (e.pageY - offset.top) * this.nodeEditor.scene.ratio;
+		
 	}
+	
 	
 };
 

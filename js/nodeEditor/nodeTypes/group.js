@@ -1,8 +1,12 @@
-var shortcuts	= require('../../environment/shortcuts/nodeEditor.shortcuts.js'),
-	NodeLasso	= require('../tools/NodeLasso'),
-	PIXI		= require('pixi.js');
+var shortcuts				= require('../../environment/shortcuts/nodeEditor.shortcuts.js'),
+	NodeLasso				= require('../tools/NodeLasso'),
+	PIXI					= require('pixi.js'),
+	EventDispatcher			= require('../../utils/EventDispatcher'),
+	createNodeSpriteEvent	= require('../../utils/createNodeSpriteEvent');
+
 
 var GroupNode = function( nodeEditor, settings ) {
+	
 	this.shortcuts = shortcuts.nodeTypes.group;
 	
 	this.nodeEditor = nodeEditor;
@@ -12,6 +16,7 @@ var GroupNode = function( nodeEditor, settings ) {
 	this.type = "group";
 	this.sprites = [];
 	this.nodes = [];
+	this.dispatchers = [];
 	
 	this.nodeEditor.tree.on( 'changed', this.handleTreeChange.bind(this) );
 	
@@ -28,7 +33,7 @@ GroupNode.prototype = {
 		
 		this.started = true;
 		
-		this.nodeLasso = new NodeLasso( this.nodeEditor, this.shortcuts.drawLine );
+		this.nodeLasso = new NodeLasso( this.nodeEditor, this, this.shortcuts.drawLine );
 		this.nodeLasso.on( 'lasso', this.onLasso.bind(this) );
 		this.nodeLasso.on( 'emptyRelease', this.onEmptyRelease.bind(this) );
 		
@@ -40,8 +45,6 @@ GroupNode.prototype = {
 	},
 	
 	handleTreeChange : function( e ) {
-		
-		console.log('handleTreeChange', this.type);
 		
 		if(this.started) {
 			
@@ -78,14 +81,20 @@ GroupNode.prototype = {
 		var i = 0; while(i++ < count) {
 			
 			var sprite = new PIXI.Graphics();
+			var index = this.sprites.length;
+			var dispatcher = new EventDispatcher();
+			
 			sprite.interactive = true;
 			sprite.buttonMode = true;
+			sprite.nodeIndex = index;
 			
-			this.draw( sprite );
-			this.setHandlers( sprite );
-			
+			this.dispatchers.push( dispatcher );
 			this.sprites.push( sprite );
 			this.container.addChild( sprite );
+			
+			this.setHandlers( sprite );
+				
+			this.draw( sprite );
 			
 		}
 		
@@ -106,14 +115,10 @@ GroupNode.prototype = {
 	
 	setHandlers : function( sprite ) {
 		
-		sprite.mousedown = function() {
-			
-			this.dispatch({
-				type: "click",
-				sprite: sprite
-			});
-			
-		}.bind(this);
+		sprite.mousedown = createNodeSpriteEvent( "mousedown", sprite, this, this.nodeEditor );
+		sprite.mouseover = createNodeSpriteEvent( "mouseover", sprite, this, this.nodeEditor );
+		sprite.mouseout = createNodeSpriteEvent( "mouseout", sprite, this, this.nodeEditor );
+		sprite.mouseup = createNodeSpriteEvent( "mouseup", sprite, this, this.nodeEditor );
 		
 	},
 	
@@ -165,3 +170,5 @@ GroupNode.prototype = {
 	}
 	
 };
+
+EventDispatcher.prototype.apply( GroupNode.prototype );

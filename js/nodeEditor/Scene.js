@@ -16,6 +16,9 @@ var Scene = function( options ) {
 	this.renderer = new PIXI.WebGLRenderer(0, 0, null, true, true);
 
 	this.graphics = new PIXI.Graphics();
+	
+	this.canvas = this.renderer.view;
+	this.$canvas = $(this.canvas);
 
 	document.body.appendChild( this.renderer.view );
 	

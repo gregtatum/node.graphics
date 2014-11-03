@@ -16,9 +16,12 @@ function getId( d ) {
 
 var NodeEditor = function( options ) {
 	
+	this.$scope = $("#nodeEditor");
+	
 	this.scene = new Scene();
 	this.keyboard = new Keyboard();
-	this.mouse = new Mouse();
+	this.mouse = new Mouse( this );
+	this.nodeDispatcher = new EventDispatcher();
 	
 	this.tree = new Tree( this );
 	
@@ -32,6 +35,7 @@ var NodeEditor = function( options ) {
 	this.setHandlers();
 	this.restart();
 	
+	this.dispatch({ type: 'show' });
 };
 
 module.exports = NodeEditor;
@@ -83,6 +87,18 @@ NodeEditor.prototype = {
 			this.nodeTypes[type].handleTreeChange();
 		}, this);
 		
+	},
+	
+	show : function() {
+		this.dispatch({ type: 'show' });
+	},
+	
+	hide : function() {
+		this.dispatch({ type: 'hide' });
+	},
+	
+	destroy : function() {
+		this.dispatch({type: 'destroy'});
 	}
 		
 };
