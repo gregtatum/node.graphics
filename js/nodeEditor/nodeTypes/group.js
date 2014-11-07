@@ -76,9 +76,8 @@ GroupNode.prototype = {
 	},
 
 	addNodes : function( count ) {
-				
 		
-		var i = 0; while(i++ < count) {
+		var i = -1; while(++i < count) {
 			
 			var sprite = new PIXI.Graphics();
 			var index = this.sprites.length;
@@ -88,6 +87,7 @@ GroupNode.prototype = {
 			sprite.buttonMode = true;
 			sprite.nodeIndex = index;
 			
+			this.nodes[i].typeIndex = index;
 			this.dispatchers.push( dispatcher );
 			this.sprites.push( sprite );
 			this.container.addChild( sprite );
@@ -152,20 +152,13 @@ GroupNode.prototype = {
 		
 	},
 	
-	// setHandlers : function( nodeType ) {
-	//
-	// 	this.nodeLasso.setHandlers( nodeType );
-	//
-	// },
-	
 	onLasso : function( e ) {
 		this.nodeEditor.tree.changeLinkSource( e.source, e.target );
 	},
 	
-	onEmptyRelease : function( e ) {
-		
-		var parent = d3.select(e.source).data()[0];
-		var node = this.nodeEditor.tree.addNodeByType( this.type, e.x, e.y, parent );
+	onEmptyRelease : function( event ) {
+
+		var node = this.nodeEditor.tree.addNodeByType( this.type, event.x, event.y, event.source );
 		
 	}
 	

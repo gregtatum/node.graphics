@@ -6,6 +6,9 @@ var HoverCircle = function( nodeEditor, nodeLasso ) {
 	this.nodeLasso = nodeLasso;
 	
 	this.sprite = new PIXI.Graphics();
+	this.nodeEditor.scene.stage.addChild( this.sprite );
+	this.sprite.visible = false;
+	
 	this.node = null;
 	this.addedSprite = false;
 	
@@ -15,6 +18,7 @@ var HoverCircle = function( nodeEditor, nodeLasso ) {
 	this.nodeLasso.on( 'mouseout', this.stop );
 	this.nodeLasso.on( 'stop', this.stop );
 
+	this.once = true;
 };
 
 module.exports = HoverCircle;
@@ -25,10 +29,15 @@ HoverCircle.prototype = {
 
 		this.node = event.node;
 		
-		this.draw();
+		if( this.once ) {
+			this.draw();
+			this.once = false;
+		}
 		this.update();
 		
-		this.nodeEditor.scene.stage.addChild( this.sprite );
+		this.sprite.visible = true;
+		this.sprite.alpha = 0;
+		
 		this.nodeEditor.scene.on('update', this.update );
 		
 		this.addedSprite = true;
@@ -38,8 +47,9 @@ HoverCircle.prototype = {
 	stop : function() {
 		
 		if( this.addedSprite ) {
+
+			this.sprite.visible = false;
 			
-			this.nodeEditor.scene.stage.removeChild( this.sprite );
 			this.nodeEditor.scene.off('update', this.update );
 			
 			this.addedSprite = false;
@@ -61,5 +71,6 @@ HoverCircle.prototype = {
 	update : function() {
 		this.sprite.position.x = this.node.x;
 		this.sprite.position.y = this.node.y;
+		this.sprite.alpha = 1;
 	}
 };

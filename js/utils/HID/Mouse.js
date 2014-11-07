@@ -29,7 +29,6 @@ Mouse.prototype = {
 		var scope = this;
 		
 		return function( event ) {
-			console.log("Event:", event.originalEvent);
 			var modifiersCorrect, clickCorrect;
 			
 			modifiersCorrect = _.reduce( shortcuts.modifiers, function( memo, modifier ) {

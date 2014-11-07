@@ -25,7 +25,7 @@ Line.prototype = {
 		this.source = source;
 		this.target = target;
 		
-		this.nodeEditor.scene.stage.addChild( this.sprite );
+		this.nodeEditor.scene.stage.addChildAt( this.sprite, 1 );
 		this.nodeEditor.scene.on('update', this.draw );
 		
 	},
@@ -43,7 +43,6 @@ Line.prototype = {
 	
 	mouseout : function( event ) {
 		this.target = this.nodeEditor.mouse.position;
-		console.log('mouseout');
 	},
 	
 	draw : function() {

@@ -1,7 +1,7 @@
 var	d3				= require('d3'),
 	EventDispatcher = require('../utils/EventDispatcher'),
 	wrapScope		= require('../utils/wrapScope'),
-	nodeTypes		= require('./nodeTypes'),
+	NodeManager		= require('./NodeManager'),
 	keys			= require('../environment/shortcuts/nodeEditor.shortcuts'),
 	Keyboard		= require('../utils/HID/Keyboard'),
 	Mouse			= require('../utils/HID/Mouse'),
@@ -24,14 +24,12 @@ var NodeEditor = function( options ) {
 	this.nodeDispatcher = new EventDispatcher();
 	
 	this.tree = new Tree( this );
+	this.nodes = new NodeManager( this );
 	
 	this.linksView = new LinksView( this );
 	this.force = this.createForce();
 	this.cursor = new Cursor( this, this.tree.root );
-	
-	this.nodeTypes = [];
-	this.initiateNodeTypes();
-	
+		
 	this.setHandlers();
 	this.restart();
 	
@@ -79,16 +77,7 @@ NodeEditor.prototype = {
 			.size([this.scene.width, this.scene.height])
 			.start();
 	},
-	
-	initiateNodeTypes : function() {
 		
-		_.each( nodeTypes, function( NodeType, type ) {
-			this.nodeTypes[type] = new NodeType( this );
-			this.nodeTypes[type].handleTreeChange();
-		}, this);
-		
-	},
-	
 	show : function() {
 		this.dispatch({ type: 'show' });
 	},

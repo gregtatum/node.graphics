@@ -72,6 +72,8 @@ NodeLasso.prototype = {
 				
 		if(this.targetNode) {
 			
+			this.sourceNode.state.reParenting = false;
+			
 			this.dispatch({
 				type: "lasso",
 				source: this.sourceNode,
@@ -97,8 +99,9 @@ NodeLasso.prototype = {
 		
 		var useNode = true,
 			prevTarget = this.targetNode;
+			
 
-		if( event.node !== this.sourceNode ) {
+		if( event.node !== this.sourceNode && ( event.node !== this.targetNode || !this.targetNode ) ) {
 					
 			if( !prevTarget ) {
 				this.exitStage(
@@ -106,6 +109,8 @@ NodeLasso.prototype = {
 					this.nodeEditor.mouse.position.y
 				);
 			}
+			
+			this.sourceNode.state.reParenting = true;
 			
 			this.dispatch({
 				type: "mouseover",
@@ -126,6 +131,8 @@ NodeLasso.prototype = {
 	},
 	
 	mouseoutNode : function( event ) {
+		
+		this.sourceNode.state.reParenting = false;
 
 		this.dispatch({
 			type: "mouseout",
@@ -142,8 +149,6 @@ NodeLasso.prototype = {
 	
 	enterStage : function( x, y ) {
 
-		console.log('enterstage');
-		
 		this.dispatch({
 			type: "enterStage",
 			x: x,
@@ -154,7 +159,6 @@ NodeLasso.prototype = {
 	
 	exitStage : function( x, y ) {
 		
-		console.log('exitstage');
 		this.dispatch({
 			type: "exitStage",
 			x: x,

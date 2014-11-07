@@ -45,6 +45,7 @@ Scene.prototype = {
 		this.dispatch({
 			type	: "update",
 			dt		: dt,
+			time	: now,
 			scene	: this
 		});
 		

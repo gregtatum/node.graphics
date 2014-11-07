@@ -8,7 +8,8 @@ var Tree = function( nodeEditor ) {
 		y: this.nodeEditor.scene.height * 0.6,
 		depth: 0,
 		type: "root",
-		id: 0
+		id: 0,
+		state: {}
 	};
 	this.nodes = [this.root];
 	this.links = [];
@@ -313,6 +314,10 @@ Tree.prototype = {
 	
 	addNode : function( node, parent ) {
 		this.nodes.push( node );
+		
+		if( !_.isObject( node.state ) ) {
+			node.state = {};
+		}
 		
 		if( parent ) {
 			this.links.push({source: parent, target: node});
